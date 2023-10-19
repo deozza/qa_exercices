@@ -28,6 +28,9 @@ class Medicine
     #[ORM\Column(type: Types::JSON)]
     private array $species = [];
 
+    #[ORM\Column]
+    private int $stock = 0;
+
     public function __construct()
     {
         $this->prescriptions = new ArrayCollection();
@@ -104,6 +107,21 @@ class Medicine
     public function setSpecies(array $species): static
     {
         $this->species = $species;
+
+        return $this;
+    }
+
+    public function getStock(): ?int
+    {
+        return $this->stock;
+    }
+
+    public function setStock(int $stock = 0): static
+    {
+        if($stock < 0) {
+            throw new \Exception('Stock cannot be negative');
+        }
+        $this->stock = $stock;
 
         return $this;
     }

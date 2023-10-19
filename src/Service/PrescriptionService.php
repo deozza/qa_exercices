@@ -21,6 +21,12 @@ class PrescriptionService
 
     public function createPrescription(\DateTime $dateStart, \DateTime $dateEnd, Medicine $medicine, int $quantity, string $dosage, Appointment $appointment): Prescription
     {
+        if (!$this->checkMedicineStock($medicine, $quantity)) {
+            throw new \Exception('Not enough stock');
+        }
+
+        $medicine->setStock($medicine->getStock() - $quantity);
+
         $prescription = new Prescription();
         $prescription->setDateStart($dateStart);
         $prescription->setDateEnd($dateEnd);
@@ -30,6 +36,15 @@ class PrescriptionService
         $prescription->setMedicine($medicine);
 
         return $prescription;
+    }
+
+    private function checkMedicineStock(Medicine $medicine, int $quantity): bool
+    {
+        if ($medicine->getStock() < $quantity) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getPrescriptionById(int $id): ?Prescription
